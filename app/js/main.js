@@ -33,6 +33,21 @@ const AppView = () => {
                         const img = new Image();
                         img.src = reader.result;
 
+                        const canvas = {
+                            width: 0,
+                            height: 0,
+                            photo : {
+                                id:"",
+                                width:0,
+                                height :0,
+                                x:0,
+                                y:0,
+                                clipX:0,
+                                clipY:0,
+                            }
+                        };
+
+
                         img.onload = function() {
                             // grab some data from the image
                             const width = img.naturalWidth;
@@ -40,10 +55,30 @@ const AppView = () => {
 
                             editorCanvas.width = 500;
                             editorCanvas.height = 500 * height / width;
-                            const ctx = editorCanvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, width, height, 0, 0, editorCanvas.width, editorCanvas.height);
+
+
+                            canvas.height = editorCanvas.height;
+                            canvas.width  = editorCanvas.width;
+                            canvas.photo.width = width;
+                            canvas.photo.height = height;
+                            canvas.photo.x=0;
+                            canvas.photo.y=0;
+
+                            reLocateImage();
+                                                  
                         }
                         // do your magic here...
+
+                        const ctx = editorCanvas.getContext('2d');
+                        const reLocateImage = function()
+                        {
+                            const ctx = editorCanvas.getContext('2d');
+                            ctx.clearRect(0, 0, editorCanvas.width, editorCanvas.height);
+
+                            ctx.drawImage(img, canvas.photo.clipX, canvas.photo.clipY, canvas.photo.width, 
+                                canvas.photo.height, canvas.photo.x, canvas.photo.y, editorCanvas.width,
+                                    editorCanvas.height);     
+                        }
                     };
                     reader.readAsDataURL( file );
                     // process just one file.
