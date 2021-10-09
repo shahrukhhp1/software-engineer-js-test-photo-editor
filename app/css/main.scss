@@ -36,3 +36,18 @@ body {
     padding: 0;
   }
 }
+
+button.active{
+  background: rgb(46, 46, 46);
+  color:white;
+}
+
+button {
+  background: rgb(239, 239, 239);
+  color : black;
+}
+
+
+#editorCanvas{
+  cursor: grab;
+}
