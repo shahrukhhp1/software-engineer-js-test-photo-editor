@@ -168,38 +168,75 @@ const AppView = () => {
             // calculate cursor coordinates reference to canvas position
             let x = e.clientX - editorCanvas.offsetLeft;
             let y = e.clientY - editorCanvas.offsetTop;
-            
+            let xDiff = x - settings.lastX;
+            let yDiff = y - settings.lastY;
             
         
             if(settings.moveTool){    
-                // update position in json and call canvas to redraw iage 
-                if(settings.lastX == settings.lastY == 0){
+                // if last points are not zero and mouse has moved, update position in json and call canvas to redraw image  
+                if(settings.lastX !== 0 && settings.lastY !== 0 && settings.lastX !== x && settings.lastY !==y){
+                    moveImage(xDiff,yDiff);
+                } else {
+                    // set x,y of last position of mouse , on movement of mouse every time this initial point is subtracted
+                    // from new position to calculate movement
                     settings.lastX = x;
                     settings.lastY = y;
-                }else{
-                    canvas.photo.x = x - settings.lastX;
-                    canvas.photo.y = y - settings.lastY;
-                    infoLabel.innerHTML = "Position : " + canvas.photo.x + " - " + canvas.photo.y;
-                    reDoImage();
                 }
+                infoLabel.innerHTML = "Position : " + canvas.photo.x + " x " + canvas.photo.y;
             }
             else if(settings.resizeTool){
-                // set values of last position of mouse if not already set
-                if(settings.lastX !== 0 && settings.lastY !== 0){
-                    // update scaling in json and call canvas to redraw iage 
-                    canvas.photo.width += x - settings.lastX;
-                    canvas.photo.height += y - settings.lastY;  
-                     reDoImage();
+                // if last points are not zero and mouse has moved, update scaling in json and call canvas to redraw iage 
+                if(settings.lastX !== 0 && settings.lastY !== 0 && settings.lastX !== x && settings.lastY !==y){
+                    reSizeImage(xDiff,yDiff);       
                 }
-                infoLabel.innerHTML = "Size : " + canvas.photo.width + " - " + canvas.photo.height;
+                // set x,y of last position of mouse for next use
                 settings.lastX = x;
                 settings.lastY = y;
+                infoLabel.innerHTML = "Scale : " + canvas.photo.width + " x " + canvas.photo.height;                
             }
         }
     };
 
+    function moveImage(xDiff,yDiff){
+        canvas.photo.x = xDiff;
+        canvas.photo.y = yDiff;
+        let imageXDiff = canvas.photo.width - editorCanvas.width;
+        
+        if(canvas.photo.x <= -imageXDiff)
+        { // if image has gone farther left and right side of canvas is going empty
+            // reset image position so that right border of image stays to right border of canvas
+            canvas.photo.x =  editorCanvas.width - canvas.photo.width;
+        }
+        else if (canvas.photo.x > 0){
+            canvas.photo.x = 0;
+        }
+        else{
+            
+        }
+        reDoImage();
+        //reDoImage();
+    };
+
+    function reSizeImage(xDiff,yDiff){
+        canvas.photo.width += xDiff;    
+        canvas.photo.height += yDiff;  
+        if(canvas.photo.width < editorCanvas.width)
+        {
+            // if image width is getting smaller than canvas width limit it to canvas width 
+            canvas.photo.width = editorCanvas.width;
+        }
+        else if(canvas.photo.height < editorCanvas.height)
+        {
+            // if image height is getting smaller than canvas height limit it to canvas width 
+            canvas.photo.height = editorCanvas.height;
+        }else{
+            // draw image if its covering the size of canvas
+            reDoImage();
+        }
+    };
+
     // method to draw/redraw image on canvas according to json
-    const reDoImage = function()
+     function reDoImage()
     {
         ctx.clearRect(0, 0, editorCanvas.width, editorCanvas.height);
 
@@ -209,11 +246,11 @@ const AppView = () => {
     };
 
 
-    const saveConfiguration = function(){
+    function saveConfiguration() {
         localStorage.setItem(settings.savedName, JSON.stringify(canvas));
     };
 
-    const loadConfiguration = function(){
+    function loadConfiguration(){
         const retrievedObject = localStorage.getItem(settings.savedName);
        
         // parse data and set values to actual json variable
