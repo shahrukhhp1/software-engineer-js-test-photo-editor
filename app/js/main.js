@@ -18,7 +18,7 @@ import '../css/main.scss'
 
 const AppView = () => {
     document.body.innerHTML = `<h1>Simple Example</h1>
-        <form action="#">
+    <form action="#">
             <fieldset>
                 <label for="fileSelector">Select an Image file</label>
                 <input type="file" id="fileSelector" />
@@ -34,7 +34,7 @@ const AppView = () => {
                 </fieldset>
                 <label id="info">-</label>
             </fieldset>
-        </form>
+    </form>
 
         <canvas id="editorCanvas"></canvas>`;
 
@@ -108,9 +108,11 @@ const AppView = () => {
         editorCanvas.width = 500;
         editorCanvas.height = 500 * height / width;
      
+        // if new image is loaded set all the initial value
+        // if saved images is loaded, this part wont run as all properties are already loaded from saved configuration
         if(settings.reset){
-            canvas.height = editorCanvas.height;
-            canvas.width  = editorCanvas.width;
+            canvas.height = height;
+            canvas.width  = width;
             canvas.photo.width = width;
             canvas.photo.height = height;
             canvas.photo.x=0;
@@ -187,7 +189,7 @@ const AppView = () => {
                     // update scaling in json and call canvas to redraw iage 
                     canvas.photo.width += x - settings.lastX;
                     canvas.photo.height += y - settings.lastY;  
-                    reDoImage();
+                     reDoImage();
                 }
                 infoLabel.innerHTML = "Size : " + canvas.photo.width + " - " + canvas.photo.height;
                 settings.lastX = x;
@@ -201,9 +203,9 @@ const AppView = () => {
     {
         ctx.clearRect(0, 0, editorCanvas.width, editorCanvas.height);
 
-        ctx.drawImage(img, canvas.photo.clipX, canvas.photo.clipY,editorCanvas.width, 
-            editorCanvas.height, canvas.photo.x, canvas.photo.y,  canvas.photo.width,
-            canvas.photo.height);     
+        ctx.drawImage(img, 
+            canvas.photo.clipX, canvas.photo.clipY,canvas.width, canvas.height, 
+            canvas.photo.x, canvas.photo.y,  canvas.photo.width, canvas.photo.height);     
     };
 
 
