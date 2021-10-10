@@ -1,3 +1,19 @@
+/*
+ * main.js - JavaScript file that is responsible for adding HTML content to body of document and functionality for image editing
+ (limited features) on canvas.
+
+* This is a test script that allows user to load image from system, which is opened in canvas and user can do following manipulation
+with that image : 
+
+1 - Move image using move button
+2 - Resize image using resize button
+3 - Save current image with its position and scaling (on local storage) by submit button
+4 - Reload saved image with its actual positioning and scaling by using import button
+ 
+ */
+
+
+
 import '../css/main.scss'
 
 const AppView = () => {
@@ -35,8 +51,8 @@ const AppView = () => {
 
     // variables' declaration
     const img = new Image();
-    const userConfig = { mouseDown : false , moveTool : true , resizeTool : false , lastX : 0, lastY : 0 ,
-         savedName : "canvasConfig", reset : true};
+    const settings = { mouseDown : false , moveTool : true , resizeTool : false , lastX : 0, lastY : 0 ,
+                         savedName : "canvasConfig", reset : true};
     const canvas = { 
         width: 0, height: 0,
         photo : {
@@ -56,7 +72,7 @@ const AppView = () => {
         const files = e.target.files;
         let file;
         for ( let i = 0; i < files.length; ++i ) {
-            userConfig.reset = true;
+            settings.reset = true;
             file = files[ i ];
             // check if file is valid Image (just a MIME check)
             switch ( file.type ) {
@@ -92,7 +108,7 @@ const AppView = () => {
         editorCanvas.width = 500;
         editorCanvas.height = 500 * height / width;
      
-        if(userConfig.reset){
+        if(settings.reset){
             canvas.height = editorCanvas.height;
             canvas.width  = editorCanvas.width;
             canvas.photo.width = width;
@@ -103,14 +119,14 @@ const AppView = () => {
         
         // call function to draw image
         reDoImage();             
-    }
+    };
 
     submitBtn.onclick = function(){
         saveConfiguration();
     };
 
     reloadBtn.onclick = function(){
-        userConfig.reset = false;
+        settings.reset = false;
         loadConfiguration();
         img.src = canvas.photo.path;        
     };
@@ -119,64 +135,63 @@ const AppView = () => {
     moveBtn.onclick = function(e){
         e.target.className= "active";
         resizeBtn.className = "";
-        userConfig.moveTool = true;
-        userConfig.resizeTool = false;
+        settings.moveTool = true;
+        settings.resizeTool = false;
     };
 
     // select a tool for image resizing
     resizeBtn.onclick = function(e){
         e.target.className= "active";
         moveBtn.className = "";
-        userConfig.resizeTool = true;
-        userConfig.moveTool = false;
+        settings.resizeTool = true;
+        settings.moveTool = false;
     };
 
     //turn boolean false tool wont work if mouse key is not press
     editorCanvas.onmousedown = function() {
-        userConfig.mouseDown = true;
+        settings.mouseDown = true;
     };
 
     //set boolen true while mouse is moving and key is pressed
     editorCanvas.onmouseup = function() {
-        userConfig.mouseDown = false;
-        userConfig.lastX = 0;
-        userConfig.lastY = 0;
+        settings.mouseDown = false;
+        settings.lastX = 0;
+        settings.lastY = 0;
     };
 
     
     editorCanvas.onmousemove =function(e) {
         // if key is pressed while mouse is moving over canvas
-        if(userConfig.mouseDown){
+        if(settings.mouseDown){
             // calculate cursor coordinates reference to canvas position
             let x = e.clientX - editorCanvas.offsetLeft;
             let y = e.clientY - editorCanvas.offsetTop;
             
             
         
-            if(userConfig.moveTool){    
+            if(settings.moveTool){    
                 // update position in json and call canvas to redraw iage 
-                if(userConfig.lastX == userConfig.lastY == 0){
-                    userConfig.lastX = x;
-                    userConfig.lastY = y;
+                if(settings.lastX == settings.lastY == 0){
+                    settings.lastX = x;
+                    settings.lastY = y;
                 }else{
-                    canvas.photo.x = x - userConfig.lastX;
-                    canvas.photo.y = y - userConfig.lastY;
+                    canvas.photo.x = x - settings.lastX;
+                    canvas.photo.y = y - settings.lastY;
                     infoLabel.innerHTML = "Position : " + canvas.photo.x + " - " + canvas.photo.y;
                     reDoImage();
                 }
             }
-            else if(userConfig.resizeTool){
+            else if(settings.resizeTool){
                 // set values of last position of mouse if not already set
-                if(userConfig.lastX == userConfig.lastY == 0){
-                    userConfig.lastX = x;
-                    userConfig.lastY = y;
-                }else{
+                if(settings.lastX !== 0 && settings.lastY !== 0){
                     // update scaling in json and call canvas to redraw iage 
-                    canvas.photo.width += x - userConfig.lastX;
-                    canvas.photo.height += y - userConfig.lastY;  
-                    infoLabel.innerHTML = "Size : " + canvas.photo.width + " - " + canvas.photo.height;
+                    canvas.photo.width += x - settings.lastX;
+                    canvas.photo.height += y - settings.lastY;  
                     reDoImage();
                 }
+                infoLabel.innerHTML = "Size : " + canvas.photo.width + " - " + canvas.photo.height;
+                settings.lastX = x;
+                settings.lastY = y;
             }
         }
     };
@@ -186,20 +201,20 @@ const AppView = () => {
     {
         ctx.clearRect(0, 0, editorCanvas.width, editorCanvas.height);
 
-        ctx.drawImage(img, canvas.photo.clipX, canvas.photo.clipY, canvas.photo.width, 
-            canvas.photo.height, canvas.photo.x, canvas.photo.y, editorCanvas.width,
-                editorCanvas.height);     
+        ctx.drawImage(img, canvas.photo.clipX, canvas.photo.clipY,editorCanvas.width, 
+            editorCanvas.height, canvas.photo.x, canvas.photo.y,  canvas.photo.width,
+            canvas.photo.height);     
     };
 
 
     const saveConfiguration = function(){
-        localStorage.setItem(userConfig.savedName, JSON.stringify(canvas));
+        localStorage.setItem(settings.savedName, JSON.stringify(canvas));
     };
 
     const loadConfiguration = function(){
-        const retrievedObject = localStorage.getItem(userConfig.savedName);
+        const retrievedObject = localStorage.getItem(settings.savedName);
        
-        // parse data and set values to actual variable on callback
+        // parse data and set values to actual json variable
         const savedInfo = JSON.parse(retrievedObject);    
         canvas.width = savedInfo.width;
         canvas.height = savedInfo.height;
