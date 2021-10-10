@@ -8,7 +8,7 @@ with that image :
 1 - Move image using move button
 2 - Resize image using resize button
 3 - Save current image with its position and scaling (on local storage) by submit button
-4 - Reload saved image with its actual positioning and scaling by using import button
+4 - Import saved image with its actual positioning and scaling by using import button
  
  */
 
@@ -19,18 +19,29 @@ import '../css/main.scss'
 const AppView = () => {
     document.body.innerHTML = `<h1>Simple Example</h1>
     <form action="#">
-            <fieldset>
+            <fieldset class="toolArea">
                 <label for="fileSelector">Select an Image file</label>
                 <input type="file" id="fileSelector" />
                 <fieldset>
                     <label>Tools</label>
-                    <button id="moveBtn">Move</button>
-                    <button id="resizeBtn">Re-Size</button>
+                    <button id="moveBtn">Move with Cursor</button>
+                    <button id="resizeBtn">Re-Size with Cursor</button>
+                    </br>
+                    <label>
+                    Manual Movement
+                    </label>
+                    <input type="number" id="changeTxt" value="1" />
+                    </br>
+                    <button id="leftBtn">Move Left</button>
+                    <button id="rightBtn">Move Right</button>
+                    <button id="upBtn">Move Up</button>
+                    <button id="downBtn">Move Down</button>
+                    
                 </fieldset>
                 <fieldset>
                     <label>Save/Export</label>
                     <button id="submitBtn">Submit</button>
-                    <button id="reloadBtn">Import</button>
+                    <button id="importBtn">Import</button>
                 </fieldset>
                 <label id="info">-</label>
             </fieldset>
@@ -45,7 +56,13 @@ const AppView = () => {
     const moveBtn = document.getElementById( "moveBtn" );
     const resizeBtn = document.getElementById( "resizeBtn" );
     const submitBtn = document.getElementById( "submitBtn" );
-    const reloadBtn = document.getElementById( "reloadBtn" );
+    const importBtn = document.getElementById( "importBtn" );
+    const leftBtn = document.getElementById( "leftBtn" );
+    const rightBtn = document.getElementById( "rightBtn" );
+    const upBtn = document.getElementById( "upBtn" );
+    const downBtn = document.getElementById( "downBtn" );
+
+    const changeTxt = document.getElementById( "changeTxt" );
     const ctx = editorCanvas.getContext('2d');
     
 
@@ -123,11 +140,32 @@ const AppView = () => {
         reDoImage();             
     };
 
+    leftBtn.onclick = function(){
+        let change = parseInt(changeTxt.value);
+        moveImage(canvas.photo.x - change,canvas.photo.y);
+    };
+
+    rightBtn.onclick = function(){
+        let change = parseInt(changeTxt.value);
+        moveImage(canvas.photo.x + change,canvas.photo.y);
+    };
+
+    
+    upBtn.onclick = function(){
+        let change = parseInt(changeTxt.value);
+        moveImage(canvas.photo.x,canvas.photo.y - change);
+    };
+
+    downBtn.onclick = function(){
+        let change = parseInt(changeTxt.value);
+        moveImage(canvas.photo.x ,canvas.photo.y + change);
+    };
+
     submitBtn.onclick = function(){
         saveConfiguration();
     };
 
-    reloadBtn.onclick = function(){
+    importBtn.onclick = function(){
         settings.reset = false;
         loadConfiguration();
         img.src = canvas.photo.path;        
@@ -201,17 +239,28 @@ const AppView = () => {
         canvas.photo.x = xDiff;
         canvas.photo.y = yDiff;
         let imageXDiff = canvas.photo.width - editorCanvas.width;
-        
+        let imageYDiff = canvas.photo.height - editorCanvas.height;
+        // to manage x axis of image so it doesn't leave borders
         if(canvas.photo.x <= -imageXDiff)
         { // if image has gone farther left and right side of canvas is going empty
-            // reset image position so that right border of image stays to right border of canvas
+            // reset image position to right border of canvas
             canvas.photo.x =  editorCanvas.width - canvas.photo.width;
         }
-        else if (canvas.photo.x > 0){
+        else if (canvas.photo.x > 0) 
+        {// image is going farther right and left side of canvas is going to be empty
+            // reset image position to zero point of x-axis
             canvas.photo.x = 0;
         }
-        else{
-            
+         
+        // to manage y axis of image so it doesn't leave borders
+        if(canvas.photo.y <= -imageYDiff)
+        {
+            canvas.photo.y =  editorCanvas.height - canvas.photo.height;
+        }
+        else if (canvas.photo.y > 0) 
+        {// image is going farther right and left side of canvas is going to be empty
+            // reset image position to zero point of x-axis
+            canvas.photo.y = 0;
         }
         reDoImage();
         //reDoImage();
