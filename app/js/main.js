@@ -23,12 +23,14 @@ const AppView = () => {
                 <label for="fileSelector">Select an Image file</label>
                 <input type="file" id="fileSelector" />
                 <fieldset>
-                    <label>Tools</label>
+                    <b>Tools</b>
+                    </br>
                     <button id="moveBtn">Move with Cursor</button>
                     <button id="resizeBtn">Re-Size with Cursor</button>
                     </br>
+                    <span>---------------------------------------------------------</span></br>
                     <label>
-                    Manual Movement
+                    Manual Control
                     </label>
                     <input type="number" id="changeTxt" value="1" />
                     </br>
@@ -36,12 +38,20 @@ const AppView = () => {
                     <button id="rightBtn">Move Right</button>
                     <button id="upBtn">Move Up</button>
                     <button id="downBtn">Move Down</button>
+                    </br>
+                    <button id="scaleUp">Scale Up</button>
+                    <button id="scaleDown">Scale Down</button>
                     
                 </fieldset>
                 <fieldset>
-                    <label>Save/Export</label>
+                    <b>Save/Import</b></br>
                     <button id="submitBtn">Submit</button>
                     <button id="importBtn">Import</button>
+                    </br>
+                    <span>---------------------------------------------------------</span></br>
+                    <button id="downloadBtn">Download Config</button>
+                    <label for="uploader">Import config</label>
+                    <input type="file" id="configUploader" />
                 </fieldset>
                 <label id="info">-</label>
             </fieldset>
@@ -61,6 +71,12 @@ const AppView = () => {
     const rightBtn = document.getElementById( "rightBtn" );
     const upBtn = document.getElementById( "upBtn" );
     const downBtn = document.getElementById( "downBtn" );
+    const scaleUp = document.getElementById( "scaleUp" );
+    const scaleDown = document.getElementById( "scaleDown" );
+
+
+    const downloadBtn = document.getElementById( "downloadBtn" );
+    const configUploader = document.getElementById( "configUploader" );
 
     const changeTxt = document.getElementById( "changeTxt" );
     const ctx = editorCanvas.getContext('2d');
@@ -115,6 +131,41 @@ const AppView = () => {
         }
     };
 
+    configUploader.onchange = function(e){
+        const files = e.target.files;
+        let file;
+        for ( let i = 0; i < files.length; ++i ) {
+            settings.reset = true;
+            file = files[ i ];
+            // check if file is valid Image (just a MIME check)
+            switch ( file.type ) {
+                case "application/json":
+                    // read Image contents from file
+                    const reader = new FileReader();
+                    reader.onload = function( e ) {
+                        // create HTMLImageElement holding image data
+                        reader.readAsText(file, "UTF-8");
+                        reader.onload = function (evt) {
+                            let retrievedObject = evt.target.result;
+
+                            const savedInfo = JSON.parse(retrievedObject);    
+                            canvas.width = savedInfo.width;
+                            canvas.height = savedInfo.height;
+                            canvas.photo = savedInfo.photo;
+                            img.src = canvas.photo.path;
+                        }
+                    };
+                    reader.readAsDataURL( file );
+                    // process just one file.
+                    return;
+
+                default:
+                    alert("Invalid file type");
+            }
+        }
+    };
+
+    
 
     img.onload = function() {
         // grab some data from the image
@@ -140,6 +191,16 @@ const AppView = () => {
         reDoImage();             
     };
 
+
+    
+    downloadBtn.onclick = function(){
+        let a = document.createElement('a');
+        a.href = "data:application/octet-stream,"+encodeURIComponent(JSON.stringify(canvas));
+        a.download = 'ImageConfig.json';
+        a.click();
+    };
+
+
     leftBtn.onclick = function(){
         let change = parseInt(changeTxt.value);
         moveImage(canvas.photo.x - change,canvas.photo.y);
@@ -159,6 +220,16 @@ const AppView = () => {
     downBtn.onclick = function(){
         let change = parseInt(changeTxt.value);
         moveImage(canvas.photo.x ,canvas.photo.y + change);
+    };
+
+    scaleUp.onclick = function(){
+        let change = parseInt(changeTxt.value);
+        reSizeImage(change,change);       
+    };
+
+    scaleDown.onclick = function(){
+        let change = parseInt(changeTxt.value);
+        reSizeImage(-change,-change);       
     };
 
     submitBtn.onclick = function(){
@@ -186,6 +257,7 @@ const AppView = () => {
         settings.resizeTool = true;
         settings.moveTool = false;
     };
+
 
     //turn boolean false tool wont work if mouse key is not press
     editorCanvas.onmousedown = function() {
