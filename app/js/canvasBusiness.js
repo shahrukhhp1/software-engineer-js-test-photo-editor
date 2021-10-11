@@ -1,3 +1,12 @@
+/*
+ * canvas business javascript file , this file is responsible for functions that are related to canvas 
+and functions of canvas that can be separated from main file.
+
+This helps in separation of methodologies that are related to canvas business logic
+ */
+
+
+
 
 // method to draw/redraw image on canvas according to json
      function reDoImage(ctx, img ,canvas)

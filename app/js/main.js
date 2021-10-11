@@ -15,52 +15,12 @@ with that image :
 
 
 import '../css/main.scss'
-const io = require("../js/io")
+const io = require("./importExport")
 const canv = require("../js/canvasBusiness")
+const consants = require("../js/constants")
 
 const AppView = () => {
-    document.body.innerHTML = `<h1>Simple Example</h1>
-    <form action="#">
-            <fieldset class="toolArea">
-                <label for="fileSelector">Select an Image file</label>
-                <input type="file" id="fileSelector" />
-                <fieldset>
-                    <b>Tools</b>
-                    </br>
-                    <button id="moveBtn">Move with Cursor</button>
-                    <button id="resizeBtn">Re-Size with Cursor</button>
-                    </br>
-                    <span>---------------------------------------------------------</span></br>
-                    <label>
-                    Manual Control
-                    </label>
-                    <input type="number" id="changeTxt" value="1" />
-                    </br>
-                    <button id="leftBtn">Move Left</button>
-                    <button id="rightBtn">Move Right</button>
-                    <button id="upBtn">Move Up</button>
-                    <button id="downBtn">Move Down</button>
-                    </br>
-                    <button id="scaleUp">Scale Up</button>
-                    <button id="scaleDown">Scale Down</button>
-                    
-                </fieldset>
-                <fieldset>
-                    <b>Save/Import</b></br>
-                    <button id="submitBtn">Submit</button>
-                    <button id="importBtn">Import</button>
-                    </br>
-                    <span>---------------------------------------------------------</span></br>
-                    <button id="downloadBtn">Download Config</button>
-                    <label for="uploader">Import config</label>
-                    <input type="file" id="configUploader" />
-                </fieldset>
-                <label id="info">-</label>
-            </fieldset>
-    </form>
-
-        <canvas id="editorCanvas"></canvas>`;
-
+    document.body.innerHTML = consants.html;
     // grab DOM elements inside index.html
     const fileSelector = document.getElementById( "fileSelector" );
     const editorCanvas = document.getElementById( "editorCanvas" );
@@ -89,7 +49,7 @@ const AppView = () => {
     // variables' declaration
     const img = new Image();
     const settings = { mouseDown : false , moveTool : true , resizeTool : false , lastX : 0, lastY : 0 ,
-                         savedName : "canvasConfig", reset : true};
+                         savedName : consants.savedConfigName , reset : true};
     const canvas = { 
         width: 0, height: 0,
         photo : {
@@ -177,14 +137,14 @@ const AppView = () => {
         const height = img.naturalHeight;
 
         // set initial values of image and canvas
-        editorCanvas.width = 500;
-        editorCanvas.height = 500 * height / width;
+        editorCanvas.width = consants.canvasWidth;
+        editorCanvas.height = consants.canvasWidth * height / width;
      
         // if new image is loaded set all the initial value
         // if saved images is loaded, this part wont run as all properties are already loaded from saved configuration
         if(settings.reset){
-            canvas.height = editorCanvas.height;
-            canvas.width  = editorCanvas.width;
+            canvas.height = height;
+            canvas.width  = width;
             canvas.photo.width = width;
             canvas.photo.height = height;
             canvas.photo.x=0;
@@ -199,7 +159,7 @@ const AppView = () => {
 
     
     downloadBtn.onclick = function(){
-        io.createAndDownloadBlob('ImageConfig.json',canvas);
+        io.createAndDownloadBlob(consants.jsonFileName,canvas);
     };
 
 
@@ -261,12 +221,12 @@ const AppView = () => {
     };
 
 
-    //turn boolean false tool wont work if mouse key is not press
+    //set boolen true while mouse is moving and key is pressed
     editorCanvas.onmousedown = function() {
         settings.mouseDown = true;
     };
 
-    //set boolen true while mouse is moving and key is pressed
+    //turn boolean false tool wont work if mouse key is not press
     editorCanvas.onmouseup = function() {
         settings.mouseDown = false;
         settings.lastX = 0;
