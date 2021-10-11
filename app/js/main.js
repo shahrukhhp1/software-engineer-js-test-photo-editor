@@ -15,6 +15,8 @@ with that image :
 
 
 import '../css/main.scss'
+const io = require("../js/io")
+const canv = require("../js/canvasBusiness")
 
 const AppView = () => {
     document.body.innerHTML = `<h1>Simple Example</h1>
@@ -80,6 +82,8 @@ const AppView = () => {
 
     const changeTxt = document.getElementById( "changeTxt" );
     const ctx = editorCanvas.getContext('2d');
+
+    
     
 
     // variables' declaration
@@ -135,7 +139,7 @@ const AppView = () => {
         const files = e.target.files;
         let file;
         for ( let i = 0; i < files.length; ++i ) {
-            settings.reset = true;
+            settings.reset = false;
             file = files[ i ];
             // check if file is valid Image (just a MIME check)
             switch ( file.type ) {
@@ -179,8 +183,8 @@ const AppView = () => {
         // if new image is loaded set all the initial value
         // if saved images is loaded, this part wont run as all properties are already loaded from saved configuration
         if(settings.reset){
-            canvas.height = height;
-            canvas.width  = width;
+            canvas.height = editorCanvas.height;
+            canvas.width  = editorCanvas.width;
             canvas.photo.width = width;
             canvas.photo.height = height;
             canvas.photo.x=0;
@@ -188,16 +192,14 @@ const AppView = () => {
         }
         
         // call function to draw image
-        reDoImage();             
+        canv.reDoImage(ctx, img , canvas);
+        
     };
 
 
     
     downloadBtn.onclick = function(){
-        let a = document.createElement('a');
-        a.href = "data:application/octet-stream,"+encodeURIComponent(JSON.stringify(canvas));
-        a.download = 'ImageConfig.json';
-        a.click();
+        io.createAndDownloadBlob('ImageConfig.json',canvas);
     };
 
 
@@ -310,72 +312,23 @@ const AppView = () => {
     function moveImage(xDiff,yDiff){
         canvas.photo.x = xDiff;
         canvas.photo.y = yDiff;
-        let imageXDiff = canvas.photo.width - editorCanvas.width;
-        let imageYDiff = canvas.photo.height - editorCanvas.height;
-        // to manage x axis of image so it doesn't leave borders
-        if(canvas.photo.x <= -imageXDiff)
-        { // if image has gone farther left and right side of canvas is going empty
-            // reset image position to right border of canvas
-            canvas.photo.x =  editorCanvas.width - canvas.photo.width;
-        }
-        else if (canvas.photo.x > 0) 
-        {// image is going farther right and left side of canvas is going to be empty
-            // reset image position to zero point of x-axis
-            canvas.photo.x = 0;
-        }
-         
-        // to manage y axis of image so it doesn't leave borders
-        if(canvas.photo.y <= -imageYDiff)
-        {
-            canvas.photo.y =  editorCanvas.height - canvas.photo.height;
-        }
-        else if (canvas.photo.y > 0) 
-        {// image is going farther right and left side of canvas is going to be empty
-            // reset image position to zero point of x-axis
-            canvas.photo.y = 0;
-        }
-        reDoImage();
-        //reDoImage();
+        canv.moveImage(canvas,editorCanvas,ctx,img);
     };
 
     function reSizeImage(xDiff,yDiff){
         canvas.photo.width += xDiff;    
         canvas.photo.height += yDiff;  
-        if(canvas.photo.width < editorCanvas.width)
-        {
-            // if image width is getting smaller than canvas width limit it to canvas width 
-            canvas.photo.width = editorCanvas.width;
-        }
-        else if(canvas.photo.height < editorCanvas.height)
-        {
-            // if image height is getting smaller than canvas height limit it to canvas width 
-            canvas.photo.height = editorCanvas.height;
-        }else{
-            // draw image if its covering the size of canvas
-            reDoImage();
-        }
+        canv.reSizeImage(canvas,editorCanvas,ctx,img);
     };
 
-    // method to draw/redraw image on canvas according to json
-     function reDoImage()
-    {
-        ctx.clearRect(0, 0, editorCanvas.width, editorCanvas.height);
-
-        ctx.drawImage(img, 
-            canvas.photo.clipX, canvas.photo.clipY,canvas.width, canvas.height, 
-            canvas.photo.x, canvas.photo.y,  canvas.photo.width, canvas.photo.height);     
-    };
-
-
+    
     function saveConfiguration() {
-        localStorage.setItem(settings.savedName, JSON.stringify(canvas));
+        io.writeLocal(settings.savedName,canvas);
     };
 
     function loadConfiguration(){
-        const retrievedObject = localStorage.getItem(settings.savedName);
-       
-        // parse data and set values to actual json variable
-        const savedInfo = JSON.parse(retrievedObject);    
+        const savedInfo = io.loadLocal(settings.savedName);
+        
         canvas.width = savedInfo.width;
         canvas.height = savedInfo.height;
         canvas.photo = savedInfo.photo;
