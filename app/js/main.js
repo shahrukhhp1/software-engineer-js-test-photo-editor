@@ -114,28 +114,56 @@ fileSelector.onchange = function( e ) {
     // it will resize canvas according to set ratio 
     img.onload = function() {
         // grab some data from the image
-        const width = img.naturalWidth;
-        const height = img.naturalHeight;
+        var width = img.naturalWidth;
+        var height = img.naturalHeight;
 
-        // set initial values of image and canvas
-        editorCanvas.width = consants.canvasWidth;
-        editorCanvas.height = consants.canvasWidth * height / width;
-     
-        // if new image is loaded set all the initial value
-        // else if saved images is loaded, this part wont run 
-        // as all properties are already loaded from saved configuration
-        if(settings.reset){
-            canvas.height = height;
-            canvas.width  = width;
-            canvas.photo.width = width;
-            canvas.photo.height = height;
-            canvas.photo.x=0;
-            canvas.photo.y=0;    
+
+        var a = consants.canvasWidth > width;
+        var b = (consants.canvasWidth * height / width) > height;
+
+        //check image size and ratio and get calcualted width & height for canvas
+        var sizing = validateImageSize(consants.canvasWidth ,width ,height);
+        if(sizing !== false)
+        {
+            // set initial values of image and canvas
+            editorCanvas.width = sizing.width;
+            editorCanvas.height = sizing.height;
+
+            // if new image is loaded set all the initial value
+            // else if saved images is loaded, this part wont run 
+            // as all properties are already loaded from saved configuration
+            if(settings.reset){
+                canvas.height = height;
+                canvas.width  = width;
+                canvas.photo.width = width;
+                canvas.photo.height = height;
+                canvas.photo.x=0;
+                canvas.photo.y=0;    
+            }
+
+            // call function to draw image
+            canv.reDoImage(ctx, img , canvas); 
         }
-        
-        // call function to draw image
-        canv.reDoImage(ctx, img , canvas);  
     };
+
+    // validation of image size and return sizing if validated
+    function validateImageSize(canvasWidth ,imgWidth ,imgHeight)
+    {
+        var objToReturn = {height : canvasWidth * imgHeight / imgWidth , width : canvasWidth };
+
+        if(objToReturn.width > imgWidth)
+        {
+            alert("Image is too small ,width should be greater than "+ canvasWidth);
+            return false;
+        }
+        if(objToReturn.height > imgHeight)
+        {
+            alert("Image is too small ,height should be greater than "+ objToReturn.height);
+            return false;
+        }
+        return objToReturn;
+    };
+
 //#endregion
 
 //#region movement events from button
@@ -221,7 +249,9 @@ fileSelector.onchange = function( e ) {
         canvas.width = savedInfo.width;
         canvas.height = savedInfo.height;
         canvas.photo = savedInfo.photo;
-
+        // reset file selector as image is loaded from save object
+        fileSelector.value = '';
+        // set source of image taken from imported file
         img.src = canvas.photo.path;        
     };
 
@@ -256,10 +286,15 @@ fileSelector.onchange = function( e ) {
                                 alert("No Saved information is found or is invalid");
                                 return;
                             }
+                            
+                            //set variable of config object from loaded file
                             canvas.width = savedInfo.width;
                             canvas.height = savedInfo.height;
                             canvas.photo = savedInfo.photo;
                             img.src = canvas.photo.path;
+
+                            // reset file selector as image is loaded from save object
+                            fileSelector.value = '';
                         }
                     };
                     reader.readAsDataURL( file );
