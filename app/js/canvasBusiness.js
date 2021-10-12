@@ -1,5 +1,5 @@
 /*
- * canvas business javascript file , this file is responsible for functions that are related to canvas 
+Canvas business javascript file , this file is responsible for functions that are related to canvas 
 and functions of canvas that can be separated from main file.
 
 This helps in separation of methodologies that are related to canvas business logic
@@ -8,6 +8,8 @@ These methods takes parameters to work on , which are :
     ctx = context of canvas
     img = image object 
     canvas = and position & height & width etc properties in object form 
+
+Developed by Shahrukh for test - 12-10-2021
  */
 
 
@@ -85,16 +87,17 @@ These methods takes parameters to work on , which are :
                 && canvas.photo.y && Number.isInteger(canvas.photo.y)
                 && canvas.photo.width && Number.isInteger(canvas.photo.width)
                 && canvas.photo.height && Number.isInteger(canvas.photo.height)
-                && canvas.photo.path && canvas.photo.path.length > 0)
+                && canvas.photo.path && canvas.photo.path.length > 0
+                && canvas.width && Number.isInteger(canvas.width)
+                && canvas.height && Number.isInteger(canvas.height))
                 {
-        
+                    return true;
                 }
             }
-
         }
         return false;
     }
 
 
 
-    module.exports = { reDoImage , reSizeImage , moveImage};
+    module.exports = { reDoImage , reSizeImage , moveImage , validateCanvasObj};

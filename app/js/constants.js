@@ -1,9 +1,10 @@
 /*
 
-* Constants javascript file , this file is responsible for all constants and values to be kept into it.
+Constants javascript file , this file is responsible for all constants and values to be kept into it.
 So they can be called and used from anywhere in project, instead of declaring constant variables
 overall in the project we keep them here in one file for easy access
 
+Developed by Shahrukh for test - 12-10-2021
  */
 
 const canvasWidth = 500;
