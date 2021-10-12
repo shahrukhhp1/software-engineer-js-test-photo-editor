@@ -14,6 +14,7 @@
                     <fieldset>
                         <b>Tools</b>
                         </br>
+                        <p>These tools allow you to move and resize image inside canvas, by mouse for better user experience</p>
                         <button id="moveBtn">Move with Cursor</button>
                         <button id="resizeBtn">Re-Size with Cursor</button>
                         </br>
@@ -21,8 +22,9 @@
                         <label>
                         Manual Control
                         </label>
-                        <input type="number" id="changeTxt" value="1" />
-                        </br>
+                        <p>These buttons gives you control to move and resize image inside canvas , you can <br> change value inside textbox to change difference in moving and resizing</p>
+                        <input type="number" id="changeTxt" value="1" /><p>This value can be increased or decreased for change to be apply by following buttons</p>
+                        
                         <button id="leftBtn">Move Left</button>
                         <button id="rightBtn">Move Right</button>
                         <button id="upBtn">Move Up</button>
@@ -34,10 +36,12 @@
                     </fieldset>
                     <fieldset>
                         <b>Save/Import</b></br>
+                        <p>Submit will save current image and its properties in local storage ,<br> and import will load that saved info and update canvas with stored info</p>
                         <button id="submitBtn">Submit</button>
                         <button id="importBtn">Import</button>
                         </br>
                         <span>---------------------------------------------------------</span></br>
+                        <p>Download button will keep current image and its properties on a file and download it, <br> Import Config button will allow you to open up that file from file system <br> on loading that Json File it will load image accordingly as saved in Json File </p>
                         <button id="downloadBtn">Download Config</button>
                         <label for="uploader">Import config</label>
                         <input type="file" id="configUploader" />

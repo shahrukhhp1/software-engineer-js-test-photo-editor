@@ -51,7 +51,7 @@ const AppView = () => {
 
 // all variabls that are used in system in the scope of app view
     const img = new Image();
-    const settings = { mouseDown : false , moveTool : true , resizeTool : false , lastX : 0, lastY : 0 ,
+    const settings = { mouseDown : false , moveTool : false , resizeTool : false , lastX : 0, lastY : 0 ,
                          savedName : consants.savedConfigName , reset : true};
     const canvas = { 
         width: 0, height: 0,

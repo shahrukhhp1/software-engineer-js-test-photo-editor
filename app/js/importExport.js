@@ -6,11 +6,15 @@ This helps in separation of methodologies that are related to import export of d
  */
 
 
- 
+ // This method saves object into local storage by converting 
+ // object into JSON, it take parameter for name and object
     function writeLocal(name, obj) {
         localStorage.setItem(name, JSON.stringify(obj));
     };
 
+    // This method loads object from local storage by name of variable saved 
+    // from 'writeLocal' method , converting string of saved into into JSON object,
+    // it take parameter for name and object
     function loadLocal(name){
         const retrievedObject = localStorage.getItem(name);
        
@@ -20,6 +24,9 @@ This helps in separation of methodologies that are related to import export of d
     };
 
 
+    // This method takes name of file and object
+    // which then converts it into JSON object and writes file
+    // and download it
     function createAndDownloadBlob(fName,data){
         let a = document.createElement('a');
         a.href = "data:application/octet-stream,"+encodeURIComponent(JSON.stringify(data));
