@@ -75,5 +75,26 @@ These methods takes parameters to work on , which are :
     };
 
 
+    function validateCanvasObj(canvas)
+    {
+        if(canvas)
+        {
+            if(canvas.photo)
+            {
+                if(canvas.photo.x && Number.isInteger(canvas.photo.x)
+                && canvas.photo.y && Number.isInteger(canvas.photo.y)
+                && canvas.photo.width && Number.isInteger(canvas.photo.width)
+                && canvas.photo.height && Number.isInteger(canvas.photo.height)
+                && canvas.photo.path && canvas.photo.path.length > 0)
+                {
+        
+                }
+            }
+
+        }
+        return false;
+    }
+
+
 
     module.exports = { reDoImage , reSizeImage , moveImage};
