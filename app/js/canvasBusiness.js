@@ -3,22 +3,17 @@
 and functions of canvas that can be separated from main file.
 
 This helps in separation of methodologies that are related to canvas business logic
+
+These methods takes parameters to work on , which are :
+    ctx = context of canvas
+    img = image object 
+    canvas = and position & height & width etc properties in object form 
  */
 
 
-
-
-// method to draw/redraw image on canvas according to json
-     function reDoImage(ctx, img ,canvas)
-     {
-         ctx.clearRect(0, 0, canvas.width, canvas.height);
- 
-         ctx.drawImage(img, 
-             canvas.photo.clipX, canvas.photo.clipY,canvas.width, canvas.height, 
-             canvas.photo.x, canvas.photo.y,  canvas.photo.width, canvas.photo.height);     
-     };
-
-
+    // This method resizes image inside canvas validating all corners of image
+    // if image is inside canvas and not leaving any blank space by calculting
+    //  x,y axis and height width of image with respect to canvas.
      function reSizeImage(canvas, editorCanvas, ctx, img){
         if(canvas.photo.width + canvas.photo.x < editorCanvas.width)
         {
@@ -36,8 +31,10 @@ This helps in separation of methodologies that are related to canvas business lo
         reDoImage(ctx, img, canvas);
     };
 
-
-    function moveImage(canvas, editorCanvas, ctx, img){
+    //This method move image inside canvas by changing is x, y axis
+    // validating all aspects if image is not leaving canvas any blank space 
+    // by calculting x,y axis and height width of image with respect to canvas.
+        function moveImage(canvas, editorCanvas, ctx, img){
         let imageXDiff = canvas.photo.width - editorCanvas.width;
         let imageYDiff = canvas.photo.height - editorCanvas.height;
         // to manage x axis of image so it doesn't leave borders
@@ -63,6 +60,18 @@ This helps in separation of methodologies that are related to canvas business lo
             canvas.photo.y = 0;
         }
         reDoImage(ctx, img ,canvas);
+    };
+
+    
+
+    // This method clears canvas and draw image on canvas according to json object provided
+    function reDoImage(ctx, img ,canvas)
+    {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.drawImage(img, 
+            canvas.photo.clipX, canvas.photo.clipY,canvas.width, canvas.height, 
+            canvas.photo.x, canvas.photo.y,  canvas.photo.width, canvas.photo.height);     
     };
 
 

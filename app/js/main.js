@@ -20,7 +20,8 @@ const canv = require("../js/canvasBusiness")
 const consants = require("../js/constants")
 
 const AppView = () => {
-    document.body.innerHTML = consants.html;
+
+//#region DOM elements initialized
     // grab DOM elements inside index.html
     const fileSelector = document.getElementById( "fileSelector" );
     const editorCanvas = document.getElementById( "editorCanvas" );
@@ -43,9 +44,11 @@ const AppView = () => {
     const changeTxt = document.getElementById( "changeTxt" );
     const ctx = editorCanvas.getContext('2d');
 
-    
-    
+//#endregion    
+
 //#region variable region
+
+
 // all variabls that are used in system in the scope of app view
     const img = new Image();
     const settings = { mouseDown : false , moveTool : true , resizeTool : false , lastX : 0, lastY : 0 ,
@@ -63,9 +66,10 @@ const AppView = () => {
             path:""
         }
     };
+
 //#endregion
 
-
+//#region event handlers
     fileSelector.onchange = function( e ) {
         // get all selected Files
         const files = e.target.files;
@@ -295,7 +299,10 @@ const AppView = () => {
         canvas.height = savedInfo.height;
         canvas.photo = savedInfo.photo;
     };
+
+//#endregion
 }
 
+// starting point of script and app
 AppView();
 
