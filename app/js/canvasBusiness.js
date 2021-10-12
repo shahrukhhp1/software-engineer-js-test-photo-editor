@@ -20,20 +20,20 @@ This helps in separation of methodologies that are related to canvas business lo
 
 
      function reSizeImage(canvas, editorCanvas, ctx, img){
-        if(canvas.photo.width < editorCanvas.width)
+        if(canvas.photo.width + canvas.photo.x < editorCanvas.width)
         {
-            // if image width is getting smaller than canvas width limit it to canvas width 
-            canvas.photo.width = editorCanvas.width;
+            // if image width is getting smaller than canvas width limit it to canvas width
+            // and addition of difference in position of x axis 
+            canvas.photo.width = editorCanvas.width - canvas.photo.x;
         }
-        else if(canvas.photo.height < editorCanvas.height)
+        if(canvas.photo.height + canvas.photo.y < editorCanvas.height)
         {
             // if image height is getting smaller than canvas height limit it to canvas width 
-            canvas.photo.height = editorCanvas.height;
+            // and addition of difference in position of y axis 
+            canvas.photo.height = editorCanvas.height - canvas.photo.y;
         }
-        else{
-            // draw image if its covering the size of canvas
-            reDoImage(ctx, img, canvas);
-        }
+        // draw image if its covering the size of canvas
+        reDoImage(ctx, img, canvas);
     };
 
 

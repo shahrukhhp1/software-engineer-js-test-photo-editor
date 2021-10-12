@@ -45,8 +45,8 @@ const AppView = () => {
 
     
     
-
-    // variables' declaration
+//#region variable region
+// all variabls that are used in system in the scope of app view
     const img = new Image();
     const settings = { mouseDown : false , moveTool : true , resizeTool : false , lastX : 0, lastY : 0 ,
                          savedName : consants.savedConfigName , reset : true};
@@ -63,6 +63,8 @@ const AppView = () => {
             path:""
         }
     };
+//#endregion
+
 
     fileSelector.onchange = function( e ) {
         // get all selected Files
